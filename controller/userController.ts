@@ -6,8 +6,8 @@ export default {
         try {
             const {email, password} = req.body
 
-            const query = 'SELECT * FROM users WHERE email = ?';
-            userDataBase.query(query, [email], (error, results) => {
+            const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
+            userDataBase.query(query, [email,password], (error, results) => {
                 if (error) {
                     console.log(error);
                     res.status(500).json({ errMsg: 'Server Error' });
@@ -16,8 +16,8 @@ export default {
                         console.log('User exists:', results)
                         res.status(200).json({ message: 'User found' });
                     } else {
-                        console.log('User does not exist');
-                        res.status(404).json({ errMsg: 'User not found' });
+                        console.log('User does not exist with the password and mail');
+                        res.status(404).json({ errMsg: 'User does not exist with the password and mail' });
                     }
                 }
             });

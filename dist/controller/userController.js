@@ -17,8 +17,8 @@ exports.default = {
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { email, password } = req.body;
-            const query = 'SELECT * FROM users WHERE email = ?';
-            userModel_1.default.query(query, [email], (error, results) => {
+            const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
+            userModel_1.default.query(query, [email, password], (error, results) => {
                 if (error) {
                     console.log(error);
                     res.status(500).json({ errMsg: 'Server Error' });
@@ -29,8 +29,8 @@ exports.default = {
                         res.status(200).json({ message: 'User found' });
                     }
                     else {
-                        console.log('User does not exist');
-                        res.status(404).json({ errMsg: 'User not found' });
+                        console.log('User does not exist with the password and mail');
+                        res.status(404).json({ errMsg: 'User does not exist with the password and mail' });
                     }
                 }
             });
@@ -43,7 +43,6 @@ exports.default = {
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { email, password } = req.body;
-            let isExist = {};
             const query = 'SELECT * FROM users WHERE email = ?';
             userModel_1.default.query(query, [email], (error, results) => {
                 if (error) {
