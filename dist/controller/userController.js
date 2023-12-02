@@ -53,7 +53,7 @@ exports.default = {
                 else {
                     if (results.length > 0) {
                         console.log('User exists:', results);
-                        res.status(200).json({ message: 'User already registered' });
+                        res.status(409).json({ errMsg: 'User already registered' });
                     }
                     else {
                         userModel_1.default.query('INSERT INTO users (email,password) values(?,?)', [
