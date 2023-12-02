@@ -17,8 +17,23 @@ exports.default = {
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { email, password } = req.body;
-            const isExist = yield userModel_1.default.query(`SELECT * FROM users WHERE email=${email}`);
-            console.log(isExist);
+            const query = 'SELECT * FROM users WHERE email = ?';
+            userModel_1.default.query(query, [email], (error, results) => {
+                if (error) {
+                    console.log(error);
+                    res.status(500).json({ errMsg: 'Server Error' });
+                }
+                else {
+                    if (results.length > 0) {
+                        console.log('User exists:', results);
+                        res.status(200).json({ message: 'User found' });
+                    }
+                    else {
+                        console.log('User does not exist');
+                        res.status(404).json({ errMsg: 'User not found' });
+                    }
+                }
+            });
         }
         catch (error) {
             console.log(error);
@@ -28,21 +43,32 @@ exports.default = {
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { email, password } = req.body;
-            const isExist = yield userModel_1.default.query(`SELECT * FROM users WHERE email=${email}`);
-            console.log(isExist, '==');
-            // if(isExist){
-            //     res.status(409).json({errMsg:"User with the mail is aleady exist"})
-            // }
-            yield userModel_1.default.query('INSERT INTO users (email,password) values(?,?)', [
-                email,
-                password
-            ], (err, result) => {
-                if (err) {
-                    console.log('Error while inserting data :' + err);
+            let isExist = {};
+            const query = 'SELECT * FROM users WHERE email = ?';
+            userModel_1.default.query(query, [email], (error, results) => {
+                if (error) {
+                    console.log(error);
+                    res.status(500).json({ errMsg: 'Server Error' });
                 }
                 else {
-                    console.log("Data inserted successfully");
-                    res.status(200).json({ message: "Data inserted successfully" });
+                    if (results.length > 0) {
+                        console.log('User exists:', results);
+                        res.status(200).json({ message: 'User already registered' });
+                    }
+                    else {
+                        userModel_1.default.query('INSERT INTO users (email,password) values(?,?)', [
+                            email,
+                            password
+                        ], (err, result) => {
+                            if (err) {
+                                throw err;
+                            }
+                            else {
+                                console.log("Data inserted successfully");
+                                res.status(200).json({ message: "Data inserted successfully" });
+                            }
+                        });
+                    }
                 }
             });
         }

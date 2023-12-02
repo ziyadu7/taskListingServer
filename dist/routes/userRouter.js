@@ -8,5 +8,6 @@ const router = express1.Router();
 const userController_1 = __importDefault(require("../controller/userController"));
 const validation_1 = __importDefault(require("../middlewares/validation"));
 router.post('/login', validation_1.default.userValidation, userController_1.default.login);
+router.post('/register', validation_1.default.userValidation, userController_1.default.register);
 module.exports = router;
 //# sourceMappingURL=userRouter.js.map

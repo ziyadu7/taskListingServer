@@ -2,7 +2,7 @@ const userDataBase = require('../config/dbConfig')
 
 const createUserTable = `CREATE TABLE IF NOT EXISTS users(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    email UNIQUE VARCHAR(50) NOT NULL
+    email VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(20) NOT NULL   
 )`
 

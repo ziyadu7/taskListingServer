@@ -4,5 +4,6 @@ import userController from '../controller/userController'
 import validation  from '../middlewares/validation'
 
 router.post('/login',validation.userValidation,userController.login)
+router.post('/register',validation.userValidation,userController.register)
 
 module.exports = router

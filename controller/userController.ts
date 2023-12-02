@@ -6,10 +6,21 @@ export default {
         try {
             const {email, password} = req.body
 
-            const isExist = await userDataBase.query(
-                `SELECT * FROM users WHERE email=${email}`
-            )
-            console.log(isExist);
+            const query = 'SELECT * FROM users WHERE email = ?';
+            userDataBase.query(query, [email], (error, results) => {
+                if (error) {
+                    console.log(error);
+                    res.status(500).json({ errMsg: 'Server Error' });
+                } else {
+                    if (results.length > 0) {
+                        console.log('User exists:', results)
+                        res.status(200).json({ message: 'User found' });
+                    } else {
+                        console.log('User does not exist');
+                        res.status(404).json({ errMsg: 'User not found' });
+                    }
+                }
+            });
             
         } catch (error) {
             console.log(error);  
@@ -20,33 +31,37 @@ export default {
         try {
 
             const {email, password} = req.body
+            let isExist:Object = {};
 
-            const isExist = await userDataBase.query(
-                `SELECT * FROM users WHERE email=${email}`
-            )
-
-            console.log(isExist,'==');
-            
-
-            // if(isExist){
-            //     res.status(409).json({errMsg:"User with the mail is aleady exist"})
-            // }
-
-            await userDataBase.query(
-                'INSERT INTO users (email,password) values(?,?)',
-                [
-                    email,
-                    password
-                ],
-                (err,result)=>{
-                    if(err){
-                        console.log('Error while inserting data :'+err);    
-                    }else{
-                        console.log("Data inserted successfully");
-                        res.status(200).json({ message: "Data inserted successfully" });
+            const query = 'SELECT * FROM users WHERE email = ?';
+            userDataBase.query(query, [email], (error, results) => {
+                if (error) {
+                    console.log(error);
+                    res.status(500).json({ errMsg: 'Server Error' });
+                } else {
+                    if (results.length > 0) {
+                        console.log('User exists:', results)
+                        res.status(200).json({ message: 'User already registered' });
+                    } else {
+                        userDataBase.query(
+                            'INSERT INTO users (email,password) values(?,?)',
+                            [
+                                email,
+                                password
+                            ],
+                            (err,result)=>{
+                                if(err){
+                                    throw err 
+                                }else{
+                                    console.log("Data inserted successfully");
+                                    res.status(200).json({ message: "Data inserted successfully" });
+                                }
+                            }
+                        )
                     }
                 }
-            )
+            })
+            
         } catch (error) {
             console.log(error);  
             res.status(200).json({errMsg:'Server Error'})
