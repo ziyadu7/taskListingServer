@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../models/userModel"));
+const auth_1 = __importDefault(require("../middlewares/auth"));
 exports.default = {
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -26,7 +27,8 @@ exports.default = {
                 else {
                     if (results.length > 0) {
                         console.log('User exists:', results);
-                        res.status(200).json({ message: 'User found' });
+                        const token = auth_1.default.generateToken(email);
+                        res.status(200).json({ message: 'User found', token });
                     }
                     else {
                         console.log('User does not exist with the password and mail');
@@ -64,7 +66,7 @@ exports.default = {
                             }
                             else {
                                 console.log("Data inserted successfully");
-                                res.status(200).json({ message: "Data inserted successfully" });
+                                res.status(200).json({ message: "User registered successfully" });
                             }
                         });
                     }

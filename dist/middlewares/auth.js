@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 exports.default = {
-    generateToken: (id) => {
-        const token = jwt.sign({ id }, process.env.JWTSECRET);
+    generateToken: (mail) => {
+        const token = jwt.sign({ mail }, process.env.JWTSECRET);
         return token;
     },
     verifyToken: (req, res, next) => {
