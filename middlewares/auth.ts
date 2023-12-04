@@ -7,8 +7,8 @@ type MyFunctionType = () => void
 
 export default {
 
-    generateToken:(id)=>{
-        const token = jwt.sign({id},process.env.JWTSECRET)
+    generateToken:(mail:String)=>{
+        const token = jwt.sign({mail},process.env.JWTSECRET)
         return token
     },
     
