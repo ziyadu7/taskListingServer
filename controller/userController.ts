@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import userDataBase from '../models/userModel'
 import auth from '../middlewares/auth';
+import hashPassword from '../helpers/passwordHash';
 
 export default {
     login : async(req:Request,res:Response) : Promise<void>=>{
         try {
-            const {email, password} = req.body
-
+            let {email, password} = req.body
+            
             const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
             userDataBase.query(query, [email,password], (error:Object, results:Array<Object>) => {
                 if (error) {
@@ -32,7 +33,7 @@ export default {
     register:async (req:Request,res:Response): Promise<void> => {
         try {
 
-            const {email, password} = req.body
+            let {email, password} = req.body
 
             const query = 'SELECT * FROM users WHERE email = ?';
             userDataBase.query(query, [email], (error:Object, results:Array<Object>) => {
@@ -44,13 +45,15 @@ export default {
                         console.log('User exists:', results)
                         res.status(409).json({ errMsg: 'User already registered' });
                     } else {
+                        password = hashPassword(password)
+                        console.log(password);
                         userDataBase.query(
                             'INSERT INTO users (email,password) values(?,?)',
                             [
                                 email,
                                 password
                             ],
-                            (err,result)=>{
+                            (err:Object)=>{
                                 if(err){
                                     throw err 
                                 }else{
