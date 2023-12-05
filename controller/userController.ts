@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import userDataBase from '../models/userModel'
 import auth from '../middlewares/auth';
-import hashPassword from '../helpers/passwordHash';
+import bcrypt from 'bcrypt'
 
 export default {
     login : async(req:Request,res:Response) : Promise<void>=>{
@@ -30,11 +30,13 @@ export default {
             res.status(200).json({errMsg:'Server Error'})
         }
     },
-    register:async (req:Request,res:Response): Promise<void> => {
+    register: async (req:Request,res:Response): Promise<void> => {
         try {
 
             let {email, password} = req.body
 
+            password = await bcrypt.hash(password,10)
+            console.log(password);
             const query = 'SELECT * FROM users WHERE email = ?';
             userDataBase.query(query, [email], (error:Object, results:Array<Object>) => {
                 if (error) {
@@ -45,7 +47,6 @@ export default {
                         console.log('User exists:', results)
                         res.status(409).json({ errMsg: 'User already registered' });
                     } else {
-                        password = hashPassword(password)
                         console.log(password);
                         userDataBase.query(
                             'INSERT INTO users (email,password) values(?,?)',

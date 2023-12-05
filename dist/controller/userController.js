@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../models/userModel"));
 const auth_1 = __importDefault(require("../middlewares/auth"));
-const passwordHash_1 = __importDefault(require("../helpers/passwordHash"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 exports.default = {
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -46,6 +46,8 @@ exports.default = {
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             let { email, password } = req.body;
+            password = yield bcrypt_1.default.hash(password, 10);
+            console.log(password);
             const query = 'SELECT * FROM users WHERE email = ?';
             userModel_1.default.query(query, [email], (error, results) => {
                 if (error) {
@@ -58,7 +60,6 @@ exports.default = {
                         res.status(409).json({ errMsg: 'User already registered' });
                     }
                     else {
-                        password = (0, passwordHash_1.default)(password);
                         console.log(password);
                         userModel_1.default.query('INSERT INTO users (email,password) values(?,?)', [
                             email,
