@@ -7,7 +7,6 @@ const dbConfig = {
     database: process.env.database
 };
 const db = mysql.createConnection(dbConfig);
-console.log(db, '======');
 // CONNECT TO DATABASE //
 db.connect((err) => {
     if (err) {

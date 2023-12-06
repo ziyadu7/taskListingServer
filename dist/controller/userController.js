@@ -19,8 +19,9 @@ exports.default = {
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             let { email, password } = req.body;
-            const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
-            userModel_1.default.query(query, [email, password], (error, results) => {
+            const query = 'SELECT * FROM users WHERE email = ?';
+            userModel_1.default.query(query, [email], (error, results) => __awaiter(void 0, void 0, void 0, function* () {
+                var _a;
                 if (error) {
                     console.log(error);
                     res.status(500).json({ errMsg: 'Server Error' });
@@ -28,15 +29,23 @@ exports.default = {
                 else {
                     if (results.length > 0) {
                         console.log('User exists:', results);
-                        const token = auth_1.default.generateToken(email);
-                        res.status(200).json({ message: 'User found', token });
+                        const isMatch = yield bcrypt_1.default.compare(password, (_a = results[0]) === null || _a === void 0 ? void 0 : _a.password);
+                        console.log(isMatch);
+                        if (isMatch) {
+                            const token = auth_1.default.generateToken(email);
+                            res.status(200).json({ message: 'User found', token });
+                        }
+                        else {
+                            console.log('User does not exist with the password and mail');
+                            res.status(404).json({ errMsg: 'User does not exist with the password and mail' });
+                        }
                     }
                     else {
                         console.log('User does not exist with the password and mail');
                         res.status(404).json({ errMsg: 'User does not exist with the password and mail' });
                     }
                 }
-            });
+            }));
         }
         catch (error) {
             console.log(error);

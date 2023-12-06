@@ -8,16 +8,23 @@ export default {
         try {
             let {email, password} = req.body
             
-            const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
-            userDataBase.query(query, [email,password], (error:Object, results:Array<Object>) => {
+            const query = 'SELECT * FROM users WHERE email = ?';
+            userDataBase.query(query, [email], async (error:Object, results) => {
                 if (error) {
                     console.log(error);
                     res.status(500).json({ errMsg: 'Server Error' });
                 } else {
                     if (results.length > 0) {
                         console.log('User exists:', results)
-                        const token = auth.generateToken(email)
-                        res.status(200).json({ message: 'User found', token});
+                        const isMatch = await bcrypt.compare(password,results[0]?.password)
+                        console.log(isMatch);
+                        if(isMatch){
+                            const token = auth.generateToken(email)
+                            res.status(200).json({ message: 'User found', token});
+                        }else{
+                            console.log('User does not exist with the password and mail');
+                            res.status(404).json({ errMsg: 'User does not exist with the password and mail' });
+                        }
                     } else {
                         console.log('User does not exist with the password and mail');
                         res.status(404).json({ errMsg: 'User does not exist with the password and mail' });
