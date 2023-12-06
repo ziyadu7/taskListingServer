@@ -8,6 +8,7 @@ const dbConfig = {
     database:process.env.database
 }
 
+
 const db = mysql.createConnection(dbConfig)
 
 // CONNECT TO DATABASE //
@@ -18,6 +19,12 @@ db.connect((err)=>{
         return
     }else{
         console.log('Database connected')
+
+        db.query('CREATE DATABASE IF NOT EXISTS tasklising',(err)=>{
+            if(err){
+                console.log('Error while creating database',err);
+            }
+        })
     }
 })
 
